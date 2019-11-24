@@ -80,6 +80,5 @@ def scrape_mars():
     ## Final output
     scraped_data = {"news_title":news_title,"news_p":news_p,"featured_image_url":featured_image_url,"mars_weather":mars_weather,"mars_table_html":mars_table_html,"hemisphere_image_urls":hemisphere_image_urls}
 
+    browser.quit()
     return scraped_data
-
-print(scrape_mars())
