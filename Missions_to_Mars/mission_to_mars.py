@@ -9,11 +9,6 @@ def scrape_mars():
     browser = Browser('chrome', **executable_path, headless = False)
     
 
-    ## Define variables
-    featured_image_url = ""
-    news_p = ""
-    news_title = ""
-
     ## Scraping Mars news
     try:
         url = 'https://mars.nasa.gov/news/'
@@ -21,10 +16,12 @@ def scrape_mars():
         time.sleep(2)
         html = browser.html
         soup = bs(html,'html.parser')
-        news_title = soup.find('div', class_ = 'content_title').a.text
-        news_p = soup.find('div', class_ = 'article_teaser_body').text
+        news_title = soup.find('section', {"class" : "grid_gallery module list_view"}).find('div', {"class" : "grid_layout"}).find('ul', {"class" : "item_list"}).find('div' , {"class" : "content_title"}).a.text
+        news_p = soup.find('section', {"class" : "grid_gallery module list_view"}).find('div', {"class" : "grid_layout"}).find('ul', {"class" : "item_list"}).find('div', class_ = 'article_teaser_body').text
     except:
         print("Mars news not found")
+        news_p = ""
+        news_title = ""
 
     ## Scraping Mars Image
     try:
@@ -40,6 +37,7 @@ def scrape_mars():
         featured_image_url = f"https://www.jpl.nasa.gov{featured_image}"
     except:
         print("Mars image not found")
+        featured_image_url = ""
 
     ## Scraping Mars Weather
     try:
@@ -48,9 +46,10 @@ def scrape_mars():
         time.sleep(2)
         html = browser.html
         soup = bs(html, 'html.parser')
-        mars_weather = soup.find('p',class_='TweetTextSize').text
+        mars_weather = mars_weather = soup.find('div', {"aria-label" : "Timeline: Mars Weather’s Tweets"}).find("div", {"lang" : "en"}) .find('span').text
     except:
         print("Mars weather not found")
+        mars_weather = ""
     
     ## Scraping Mars Facts
     try:
