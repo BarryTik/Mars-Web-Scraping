@@ -18,26 +18,32 @@ def scrape_mars():
         soup = bs(html,'html.parser')
         news_title = soup.find('section', {"class" : "grid_gallery module list_view"}).find('div', {"class" : "grid_layout"}).find('ul', {"class" : "item_list"}).find('div' , {"class" : "content_title"}).a.text
         news_p = soup.find('section', {"class" : "grid_gallery module list_view"}).find('div', {"class" : "grid_layout"}).find('ul', {"class" : "item_list"}).find('div', class_ = 'article_teaser_body').text
+        news_a = 'https://mars.nasa.gov' + soup.find('section', {"class" : "grid_gallery module list_view"}).find('div', {"class" : "grid_layout"}).find('ul', {"class" : "item_list"}).find('div' , {"class" : "content_title"}).a["href"]
+
     except:
         print("Mars news not found")
         news_p = ""
         news_title = ""
+        news_a = ""
 
     ## Scraping Mars Image
     try:
         url = 'https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
         browser.visit(url)
         time.sleep(2)
-        browser.click_link_by_partial_text('FULL IMAGE')
-        time.sleep(2)
+        # browser.click_link_by_partial_text('FULL IMAGE')
+        # time.sleep(2)
         html= browser.html
         soup = bs(html, 'html.parser')
 
-        featured_image = soup.find('div', class_="fancybox-inner").img['src']
+        featured_image = soup.find('section', {"class": "grid_gallery"}).find('li', {"class": "slide"}).find('img', {"class", "thumb"})["src"]
         featured_image_url = f"https://www.jpl.nasa.gov{featured_image}"
+        featured_image_text = featured_image = soup.find('section', {"class": "grid_gallery"}).find('li', {"class": "slide"}).find('a', {"class": "fancybox"})["data-description"]
+
     except:
         print("Mars image not found")
         featured_image_url = ""
+        featured_image_text = ""
 
     ## Scraping Mars Weather
     try:
@@ -55,7 +61,7 @@ def scrape_mars():
     try:
         url='https://space-facts.com/mars/'
         mars_table = pd.read_html(url)
-        mars_table_html = mars_table[0].to_html().replace('\n','')
+        mars_table_html = mars_table[0].to_html(index=False, header=False).replace('\n','')
     except:
         ("Mars Facts not found")
     
@@ -77,7 +83,7 @@ def scrape_mars():
     except:
         ("Mars Hemispheres not found")
     ## Final output
-    scraped_data = {"news_title":news_title,"news_p":news_p,"featured_image_url":featured_image_url,"mars_weather":mars_weather,"mars_table_html":mars_table_html,"hemisphere_image_urls":hemisphere_image_urls}
+    scraped_data = {"news_title":news_title,"news_p":news_p,"news_a":news_a,"featured_image_url":featured_image_url,"featured_image_text":featured_image_text,"mars_weather":mars_weather,"mars_table_html":mars_table_html,"hemisphere_image_urls":hemisphere_image_urls}
 
     browser.quit()
     return scraped_data
